@@ -15,7 +15,7 @@ public class Item {
 	}
 	protected String material;
 	protected int quantity;
-	
+
 	public static final Comparator<Item> COMPARE_BY_TITLE_INCREASE = new ItemComparatorByTitleIncrease();
 	public static final Comparator<Item> COMPARE_BY_TITLE_DECREASE = new ItemComparatorByTitleDecrease();
 	public static final Comparator<Item> COMPARE_BY_PRICE_INCREASE = new ItemComparatorByPriceIncrease();
@@ -25,12 +25,6 @@ public class Item {
 
 	public String getId() {
 		return id;
-	}
-	public Item(String id, float price, int quantity) {
-		super();
-		this.id = id;
-		this.price = price;
-		this.quantity = quantity;
 	}
 	public void setId(String id) {
 		this.id = id;

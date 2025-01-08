@@ -8,5 +8,4 @@
  */
 module WShop {
 	requires java.desktop;
-	requires java.sql;
 }

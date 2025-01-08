@@ -2,10 +2,10 @@ package ws.Manager;
 
 public class Order {
 	protected int id;
-	protected String name; //thra la email cua ng dat
+	protected String name;
 	protected String pnum;
 	protected String address;
-	protected String attitude; //status nhung Linh ko cho sua
+	protected String attitude;
 	public String getName() {
 		return name;
 	}

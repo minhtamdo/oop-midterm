@@ -4,7 +4,7 @@ import ws.item.Item;
 
 public class Bag extends Item {
 	private int size;
-	private String subtype; 
+	private String subtype; // crossbody, backpack, wristlet, bum
 	public int getSize() {
 		return size;
 	}

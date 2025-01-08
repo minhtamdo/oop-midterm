@@ -1,24 +1,18 @@
 package ws.person;
+
 public class Person {
-    private int id;
-    private String username; 
-    private String password;
-    private String name;
-    private String email;
-    private String phone;
-    private String role;
+	private String tk;
+	private String mk;
+	private String name;
+	private String email;
+	private String role; // Manager, Guest
+	
+	public String getName() {
+		return name;
+	}
 
-    
-
-	public Person(int id, String username, String password, String name, String email, String phone, String role) {
-		super();
-		this.id = id;
-		this.username = username;
-		this.password = password;
+	public void setName(String name) {
 		this.name = name;
-		this.email = email;
-		this.phone = phone;
-		this.role = role;
 	}
 
 	public String getEmail() {
@@ -29,44 +23,22 @@ public class Person {
 		this.email = email;
 	}
 
-	public int getId() {
-		return id;
+	
+	
+	public String getTk() {
+		return tk;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setTk(String tk) {
+		this.tk = tk;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getMk() {
+		return mk;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
+	public void setMk(String mk) {
+		this.mk = mk;
 	}
 
 	public String getRole() {
@@ -74,6 +46,15 @@ public class Person {
 	}
 
 	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public Person(String tk, String mk, String name, String email, String role) {
+		super();
+		this.tk = tk;
+		this.mk = mk;
+		this.name = name;
+		this.email = email;
 		this.role = role;
 	}
 

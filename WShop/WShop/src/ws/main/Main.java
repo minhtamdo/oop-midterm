@@ -36,7 +36,6 @@ public class Main {
 	
     public static void main(String[] args) {
 		testcase();
-		nowPerson= new Person(1,"johndoe", "password123", "John Doe", "john.doe@example.com","313213", "Manager");
 		space();
 		space();
 		showMenu();
@@ -141,7 +140,7 @@ public class Main {
 	public static void viewCart() {
 		int choice;
 		if(nowPerson != null) {
-			cart.print(nowPerson.getEmail());
+			cart.print();
 			do{
 				System.out.println("1. Sort");
 				System.out.println("2. Filter");
@@ -186,7 +185,7 @@ public class Main {
 	public static void viewFavourite() {
 		int choice;
 		if(nowPerson != null) {
-			favourite.print(nowPerson.getEmail());
+			favourite.print();
 			do{
 				System.out.println("1. Sort");
 				System.out.println("2. Filter");
@@ -198,14 +197,11 @@ public class Main {
 				choice = scanner.nextInt();
 				scanner.nextLine();
 				switch (choice) {
-				case 0:
-					break;
 				case 1:
 					sort(3);
 					break;
 				case 2:
 					filter(3);
-					break;
 				case 3:
 					addToYourCart();
 					break;
@@ -229,7 +225,17 @@ public class Main {
 		} else {
 			System.out.print("Enter the Item's id: ");
 			String id = scanner.nextLine();
-			cart.addItem(nowPerson.getEmail(), id);
+			Item item = store.searchOneById(id);
+			if(item==null) {
+				System.out.println("Item is not found");
+			} else {
+				Item item2 = cart.searchOneById(id);
+				if(item2!=null) {
+					System.out.println("Item is already in your Cart");
+				} else {
+					cart.addItem(item);
+				}
+			}
 		}
 	}
 	public static void addToYourFavourite() {
@@ -239,7 +245,17 @@ public class Main {
 		} else {
 			System.out.print("Enter the Item's id: ");
 			String id = scanner.nextLine();
-			favourite.addItem(nowPerson.getEmail(), id);			
+			Item item = store.searchOneById(id);
+			if(item==null) {
+				System.out.println("Item is not found");
+			} else {
+				Item item2 = favourite.searchOneById(id);
+				if(item2!=null) {
+					System.out.println("Item is already in your Favourite");
+				} else {
+					favourite.addItem(item);
+				}
+			}
 		}
 	}
 	public static void login() {
@@ -250,7 +266,7 @@ public class Main {
 		System.out.print("Password: ");
 		mk = scanner.nextLine();
 		for (Person person : personList) {
-			if(person.getUsername().equals(tk) && person.getPassword().equals(mk) || person.getEmail().equals(tk) && person.getPassword().equals(mk)) {
+			if(person.getTk().equals(tk) && person.getMk().equals(mk) || person.getEmail().equals(tk) && person.getMk().equals(mk)) {
 				nowPerson = person;
 				break;
 			}
@@ -284,7 +300,7 @@ public class Main {
 			}  
 		}
 		if (check==true) {
-			nowPerson = new Person(1,name,email,account,password,"012313",role);
+			nowPerson = new Person(name,email,account,password,role);
 			personList.add(nowPerson);
 			System.out.println("Sign in successfully. Welcome " + name);
 		}
@@ -330,34 +346,49 @@ public class Main {
 		String choice = scanner.nextLine();
 		switch (choice) {
 		case "Yes":
-			cart.placeOrder(nowPerson.getEmail(), address, pnum);
+			cart.placeOrder();
+			orderList.addOrder(++nbOrder, nowPerson.getEmail(), pnum, address);
 			break;
 		case "No":
 			break;	
 		default:
 		}
+		
 	}
 	public static void changeTheQuantity(){
 		System.out.print("Enter the Item's id: ");
 		String id = scanner.nextLine();
+		Item item = cart.searchOneById(id);
+		if(item == null) {
+			System.out.println("Item is not found");
+			return;
+		}
 		System.out.print("Enter the new quantity: ");
 		int qty = scanner.nextInt();
 		scanner.nextLine();
-		if (qty <=0) {
-			cart.removeItem(nowPerson.getEmail(), id);
-			return;
-		}
-		cart.changeQuantity(nowPerson.getEmail(), id, qty);
+		cart.changeQty(id, qty);
 	}		
 	public static void removeItemCart(){
 		System.out.print("Enter the Item's id: ");
 		String id = scanner.nextLine();
-		cart.removeItem(nowPerson.getEmail(), id);
+		Item item = cart.searchOneById(id);
+		if(item == null) {
+			System.out.println("Item is not found");
+		} else {
+			cart.removeItem(item.getId());
+			System.out.println("Item has been removed");
+		}
 	}
 	public static void removeItemFavourite() {
 		System.out.print("Enter the Item's id: ");
 		String id = scanner.nextLine();
-		favourite.removeItem(nowPerson.getEmail(), id);
+		Item item = favourite.searchOneById(id);
+		if(item == null) {
+			System.out.println("Item is not found");
+		} else {
+			favourite.removeItem(item.getId());
+			System.out.println("Item has been removed");
+		}
 	}
 	public static void sort(int list, int type) {
 		int choice = 0;
@@ -378,37 +409,46 @@ public class Main {
 				case 1:
 					switch(list) { //storeForSort1, cartForSort2, favouriteForSort3
 					case 1:
-						storeForSort.sortByTitle("ASC");
+						storeForSort.sortByTitleIncrease();
+						storeForSort.print();
 						break;
 					case 2:
-						cartForSort.sortCartByProductName(nowPerson.getEmail(), "ASC");
+						cartForSort.sortByTitleIncrease();
+						cartForSort.print();
 						break;
 					case 3:
-						favouriteForSort.sortFavouriteByTitle(nowPerson.getEmail(),"ASC");
+						favouriteForSort.sortByTitleIncrease();
+						favouriteForSort.print();
 					}
 					break;
 				case 2:
 					switch(list) { //storeForSort1, cartForSort2, favouriteForSort3
 					case 1:
-						storeForSort.sortByPrice("ASC");
+						storeForSort.sortByPriceIncrease();
+						storeForSort.print();
 						break;
 					case 2:
-						cartForSort.sortCartByPrice(nowPerson.getEmail(), "ASC");
+						cartForSort.sortByPriceIncrease();
+						cartForSort.print();
 						break;
 					case 3:
-						favouriteForSort.sortFavouriteByPrice(nowPerson.getEmail(),"ASC");
+						favouriteForSort.sortByPriceIncrease();
+						favouriteForSort.print();
 					}
 					break;
 				case 3:
 					switch(list) { //storeForSort1, cartForSort2, favouriteForSort3
 					case 1:
-						storeForSort.sortByType("ASC");
+						storeForSort.sortByTypeIncrease();
+						storeForSort.print();
 						break;
 					case 2:
-						cartForSort.sortCartByType(nowPerson.getEmail(), "ASC");
+						cartForSort.sortByTypeIncrease();
+						cartForSort.print();
 						break;
 					case 3:
-						favouriteForSort.sortFavouriteByType(nowPerson.getEmail(),"ASC");
+						favouriteForSort.sortByTypeIncrease();
+						favouriteForSort.print();
 					}
 					break;
 				}
@@ -418,37 +458,46 @@ public class Main {
 				case 1:
 					switch(list) { //storeForSort1, cartForSort2, favouriteForSort3
 					case 1:
-						storeForSort.sortByTitle("DESC");
+						storeForSort.sortByTitleDecrease();
+						storeForSort.print();
 						break;
 					case 2:
-						cartForSort.sortCartByProductName(nowPerson.getEmail(), "DESC");
+						cartForSort.sortByTitleDecrease();
+						cartForSort.print();
 						break;
 					case 3:
-						favouriteForSort.sortFavouriteByTitle(nowPerson.getEmail(),"DESC");
+						favouriteForSort.sortByTitleDecrease();
+						favouriteForSort.print();
 					}
 					break;
 				case 2:
 					switch(list) { //storeForSort1, cartForSort2, favouriteForSort3
 					case 1:
-						storeForSort.sortByPrice("DESC");
+						storeForSort.sortByPriceDecrease();
+						storeForSort.print();
 						break;
 					case 2:
-						cartForSort.sortCartByPrice(nowPerson.getEmail(), "DESC");
+						cartForSort.sortByPriceDecrease();
+						cartForSort.print();
 						break;
 					case 3:
-						favouriteForSort.sortFavouriteByPrice(nowPerson.getEmail(),"DESC");
+						favouriteForSort.sortByPriceDecrease();
+						favouriteForSort.print();
 					}
 					break;
 				case 3:
 					switch(list) { //storeForSort1, cartForSort2, favouriteForSort3
 					case 1:
-						storeForSort.sortByType("DESC");
+						storeForSort.sortByTypeDecrease();
+						storeForSort.print();
 						break;
 					case 2:
-						cartForSort.sortCartByType(nowPerson.getEmail(), "DESC");
+						cartForSort.sortByTypeDecrease();
+						cartForSort.print();
 						break;
 					case 3:
-						favouriteForSort.sortFavouriteByType(nowPerson.getEmail(),"DESC");
+						favouriteForSort.sortByTypeDecrease();
+						favouriteForSort.print();
 						break;
 					}
 					break;
@@ -475,39 +524,48 @@ public class Main {
 		case 1: //Store
 			switch(choice) {
 			case 1:
-				store.searchByTitle(key);
+				searchList = store.searchByTitle(key);
+				printFilterStore(searchList);
 				break;
 			case 2:
-				store.searchById(key);
+				searchList = store.searchById(key);
+				printFilterStore(searchList);
 				break;
 			case 3:
-				store.searchByType(key);
+				searchList = store.searchByType(key);
+				printFilterStore(searchList);
 				break;
 			}
 			break;
 		case 2:
 			switch(choice) {
 			case 1:
-				cart.searchByTitle(nowPerson.getEmail(), key);
+				searchList = cart.searchByTitle(key);
+				printFilterCart(searchList);
 				break;
 			case 2:
-				cart.searchById(nowPerson.getEmail(), key);
+				searchList = cart.searchById(key);
+				printFilterCart(searchList);
 				break;
 			case 3:
-				cart.searchByType(nowPerson.getEmail(), key);
+				searchList = cart.searchByType(key);
+				printFilterCart(searchList);
 				break;
 			}
 			break;
 		case 3:
 			switch(choice) {
 			case 1:
-				favourite.searchByTitle(nowPerson.getEmail(), key);
+				searchList = favourite.searchByTitle(key);
+				printFilterStore(searchList);
 				break;
 			case 2:
-				favourite.searchById(nowPerson.getEmail(), key);
+				printFilterStore(searchList);
+				searchList = favourite.searchById(key);
 				break;
 			case 3:
-				favourite.searchByType(nowPerson.getEmail(), key);
+				searchList = favourite.searchByType(key);
+				printFilterStore(searchList);
 				break;
 			}
 		}
@@ -564,75 +622,187 @@ public class Main {
 		} while(choice != 0);
 	}
 	public static void addNewItem() {
-	    System.out.println("******************** Add Item ********************");
-	    System.out.println("ID: ");
-	    String id = scanner.nextLine();
-	    
-	    System.out.println("Title: ");
-	    String title = scanner.nextLine();
-	    System.out.println("Price: ");
-	    float price = scanner.nextFloat();
-	    scanner.nextLine(); // Clear the buffer
-	    System.out.println("Type: ");
-	    String type = scanner.nextLine();
-	    System.out.println("Material: ");
-	    String material = scanner.nextLine();
-
-	    String subtype = null; // Default value for subtype
-	    int size = 0; // Default value for size
-
-	    // Kiểm tra loại sản phẩm và lấy các tham số phụ trợ
-	    switch (type) {
-	        case "Bag":
-	        case "Shoe":
-	        case "Coat":
-	        case "Jean":
-	        case "Trouser":
-	        case "Croptop":
-	        case "Hoodie":
-	        case "Shirt":
-	        case "Tshirt":
-	        case "Sweater":
-	            System.out.println("Size: ");
-	            size = scanner.nextInt();
-	            scanner.nextLine(); // Clear the buffer
-	            System.out.println("Subtype: ");
-	            subtype = scanner.nextLine();
-	            break;
-	        case "Glasses":
-	        case "Hat":
-	        case "Sock":
-	            System.out.println("Subtype: ");
-	            subtype = scanner.nextLine();
-	            break;
-	        case "Jogger":
-	            System.out.println("Size: ");
-	            size = scanner.nextInt();
-	            scanner.nextLine(); // Clear the buffer
-	            break;
-	        default:
-	            System.out.println("Item's Type is undefined.");
-	            return;
-	    }
-	    
-	    // Tạo đối tượng Item chung và thêm vào store
-	    Item item = new Item(id, title, price, type, material);
-	    store.addItem(item, subtype, size);
-	    System.out.println(item.getTitle() + " has been added to the store.");
+		System.out.println("******************** Add Item ********************");
+		System.out.println("ID: ");
+		String id = scanner.nextLine();
+		for (Item item : store.getItemsInStore()) {
+			if(item.getId().equals(id)) {
+				System.out.println("Item is already in Store");
+				return;
+			}  
+		}
+		System.out.println("Title: ");
+		String title = scanner.nextLine();
+		System.out.println("Price: ");
+		float price = scanner.nextFloat();
+		scanner.nextLine();
+		System.out.println("Type: ");
+		String type = scanner.nextLine();
+		System.out.println("Material: ");
+		String material = scanner.nextLine();
+		
+		if(type.equals("Bag")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Bag(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Glasses")) {
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Glasses(id,title,price,type, material, subType));
+		} else
+		if(type.equals("Hat")) {
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Hat(id,title,price,type, material, subType));
+		} else
+		if(type.equals("Shoe")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Shoe(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Sock")) {
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Sock(id,title,price,type, material, subType));
+		} else
+		if(type.equals("Coat")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Coat(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Jean")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Jean(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Jogger")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			store.addItem(new Jogger(id,title,price,type, material,size));
+		} else
+		if(type.equals("Trouser")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Trouser(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Croptop")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Croptop(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Hoodie")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Hoodie(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Shirt")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Shirt(id,title,price,type, material, subType,size));
+		} else
+		if(type.equals("Sweater")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			store.addItem(new Sweater(id,title,price,type, material,size));
+		} else
+		if(type.equals("Tshirt")) {
+			System.out.println("Size: ");
+			int size = scanner.nextInt();
+			scanner.nextLine();
+			System.out.println("Subtype: ");
+			String subType = scanner.nextLine();
+			store.addItem(new Bag(id,title,price,type, material, subType,size));
+		} else {
+			System.out.println("Item's Type is undefinded");
+			return;
+		}		
 	}
-
 	public static void removeItemFromStore() {
 		System.out.print("Enter the Item's id: ");
 		String id = scanner.nextLine();
-		store.removeItem(id);
+		Item item = store.searchOneById(id);
+		if(item == null) {
+			System.out.println("Item is not found");
+		} else {
+			store.removeItem(item.getId());
+			System.out.println("Item has been removed");
+		}	
 	}
 	public static void testcase() {
 		// Test cases for Person
-		personList.add(new Person(1,"john123", "password", "John", "john@gmail.com", "99740071", "Guest"));
-		personList.add(new Person(2,"anna456", "password", "Anna", "anna@gmail.com", "000000000", "Manager"));
-		personList.add(new Person(3,"mark789", "password", "Mark", "mark@gmail.com", "023000000", "Guest"));
-		personList.add(new Person(4,"johndoe", "password123", "John Doe", "john.doe@example.com", "0000012330", "Manager"));
+		personList.add(new Person("john123", "password", "John", "john@gmail.com", "Guest"));
+		personList.add(new Person("anna456", "password", "Anna", "anna@gmail.com", "Manager"));
+		personList.add(new Person("mark789", "password", "Mark", "mark@gmail.com", "Guest"));
 		// Test cases for Bags
-		
+		store.addItem(new Bag("Ba1", "City Explorer", 49.99f, "Bag", "Leather", "basic", 25));
+		store.addItem(new Bag("Ba2", "Urban Adventure", 59.99f, "Bag", "Canvas", "basic", 30));
+		store.addItem(new Bag("Ba3", "Weekend Escape", 39.99f, "Bag", "Synthetic", "basic", 20));
+		// Test cases for Glasses
+		store.addItem(new Glasses("Gl1", "Sunshine", 19.99f, "Glasses", "Plastic", "basic"));
+		store.addItem(new Glasses("Gl2", "Vision Pro", 29.99f, "Glasses", "Metal", "basic"));
+		// Test cases for Hats
+		store.addItem(new Hat("Ha1", "Beanie", 15.99f, "Hat", "Wool", "basic"));
+		store.addItem(new Hat("Ha2", "Snapback", 25.99f, "Hat", "Cotton", "basic"));
+		// Test cases for Shoes
+		store.addItem(new Shoe("Sh1", "Trail Runner", 89.99f, "Shoe", "Mesh", "basic", 42));
+		store.addItem(new Shoe("Sh2", "Urban Sneakers", 79.99f, "Shoe", "Synthetic", "basic", 40));
+		// Test cases for Socks
+		store.addItem(new Sock("So1", "Ankle Fit", 4.99f, "Sock", "Cotton", "basic"));
+		store.addItem(new Sock("So2", "Sporty", 6.99f, "Sock", "Polyester", "basic"));
+		// Test cases for Coats
+		store.addItem(new Coat("Co1", "Winter Shield", 129.99f, "Coat", "Wool", "basic", 48));
+		store.addItem(new Coat("Co2", "Rain Defender", 99.99f, "Coat", "Nylon", "basic", 46));
+		// Test cases for Jeans
+		store.addItem(new Jean("Je1", "Slim Fit", 49.99f, "Jean", "Denim", "basic", 32));
+		store.addItem(new Jean("Je2", "Classic Blue", 59.99f, "Jean", "Denim", "basic", 34));
+		// Test cases for Joggers
+		store.addItem(new Jogger("Jo1", "Comfy Jogger", 39.99f, "Jogger", "Cotton", 30));
+		store.addItem(new Jogger("Jo2", "Sport Jogger", 44.99f, "Jogger", "Polyester", 32));
+		// Test cases for Trousers
+		store.addItem(new Trouser("Tr1", "Business Formal", 69.99f, "Trouser", "Wool", "basic", 32));
+		store.addItem(new Trouser("Tr2", "Casual Fit", 49.99f, "Trouser", "Cotton", "basic", 34));
+		// Test cases for Croptops
+		store.addItem(new Croptop("Cr1", "Summer Breeze", 29.99f, "Croptop", "Cotton", "basic", 28));
+		store.addItem(new Croptop("Cr2", "Chic Style", 34.99f, "Croptop", "Polyester", "basic", 30));
+		// Test cases for Hoodies
+		store.addItem(new Hoodie("Ho1", "Cozy Hoodie", 59.99f, "Hoodie", "Cotton", "basic", 40));
+		store.addItem(new Hoodie("Ho2", "Street Style", 69.99f, "Hoodie", "Polyester", "basic", 42));
+		// Test cases for Shirts
+		store.addItem(new Shirt("Sh1", "Oxford Shirt", 49.99f, "Shirt", "Cotton", "basic", 38));
+		store.addItem(new Shirt("Sh2", "Casual Shirt", 39.99f, "Shirt", "Linen", "basic", 40));
+		// Test cases for Sweaters
+		store.addItem(new Sweater("Sw1", "Classic Knit", 59.99f, "Sweater", "Wool", 38));
+		store.addItem(new Sweater("Sw2", "Modern Pullover", 49.99f, "Sweater", "Cotton", 40));
+		// Test cases for Tshirts
+		store.addItem(new Tshirt("Ts1", "Graphic Tee", 19.99f, "Tshirt", "Cotton", "basic", 38));
+		store.addItem(new Tshirt("Ts2", "Plain White", 14.99f, "Tshirt", "Cotton", "basic", 40));
+
 	}
 }
